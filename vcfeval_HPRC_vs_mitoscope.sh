@@ -34,6 +34,7 @@ RTG_OUTDIR_HIGHCONF="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/hapmap/hprc_t
 ## format the merged baldur vcf for use with vcfeval
 bcftools norm --multiallelics -both ${BALDUR_VCF} | bcftools norm --atomize --atom-overlaps . | \
 bcftools +fill-tags -- -t 'NUM_AC:1=AC' | \
+bcftools +fill-tags -- -t 'AVG_HET:1=sum(HPL)/INFO/NUM_AC' | \
 bcftools view -s hapmap-${tech}-bcm  | \
 bcftools annotate -x FORMAT | \
 bcftools +setGT -- -t a -n c:'1' | \
@@ -44,19 +45,19 @@ bcftools index --tbi ${BALDUR_FORMATTED_VCF}
 bcftools view -i 'NUM_AC>=2' ${BALDUR_FORMATTED_VCF} -Oz -o ${BALDUR_FORMATTED_VCF_HIGHCONF}
 bcftools index --tbi ${BALDUR_FORMATTED_VCF_HIGHCONF}
 
-## run rtg vcfeval 
-#rtg format -o ${REF_RTG} ${REF}
-rtg vcfeval \
-    -b ${HPRC_FORMATTED_VCF}  \
-    -c ${BALDUR_FORMATTED_VCF} \
-    -t ${REF_RTG} \
-    -o ${RTG_OUTDIR}
+# ## run rtg vcfeval 
+# #rtg format -o ${REF_RTG} ${REF}
+# rtg vcfeval \
+#     -b ${HPRC_FORMATTED_VCF}  \
+#     -c ${BALDUR_FORMATTED_VCF} \
+#     -t ${REF_RTG} \
+#     -o ${RTG_OUTDIR}
 
-rtg vcfeval \
-    -b ${HPRC_FORMATTED_VCF}  \
-    -c ${BALDUR_FORMATTED_VCF_HIGHCONF} \
-    -t ${REF_RTG} \
-    -o ${RTG_OUTDIR_HIGHCONF}
+# rtg vcfeval \
+#     -b ${HPRC_FORMATTED_VCF}  \
+#     -c ${BALDUR_FORMATTED_VCF_HIGHCONF} \
+#     -t ${REF_RTG} \
+#     -o ${RTG_OUTDIR_HIGHCONF}
 
 
 # ## run eval individually per sample (not on merged vcf)
