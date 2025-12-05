@@ -4,12 +4,12 @@ source /etc/profile.d/modules.sh
 module load modules modules-init modules-gs 
 module load bcftools/1.21 htslib/1.21
 
-# tech="ont"
-# group="hapmap"
+tech="ont"
+group="benchmark"
 
-# OUTDIR="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/${group}/${tech}/output"
-# SCRIPTDIR="/net/nwgc/vol1/home/czaka/tools/mitoscope/nextflow/pipeline/bin/"
-# MITOMAP="/net/nwgc/vol1/home/czaka/tools/mitoscope/annotations/CombinedDiseaseVariantDB.csv"
+OUTDIR="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/${group}/${tech}/output"
+SCRIPTDIR="/net/nwgc/vol1/home/czaka/tools/mitoscope/bin/"
+MITOMAP="/net/nwgc/vol1/home/czaka/tools/mitoscope/resources/annotations/CombinedDiseaseVariantDB.csv"
 
 # ## mutserve
 # LIST_OF_VCFS=$(ls ${OUTDIR}/*/variants/mutserve/to_ref/*.mutserve.norm.vcf.gz)
@@ -18,16 +18,16 @@ module load bcftools/1.21 htslib/1.21
 # ${SCRIPTDIR}/annotate.py --annotations ${MITOMAP} \
 # --input ${OUTDIR}/merged.mutserve.vcf.gz --caller mutserve --multisample
 
-# ## baldur
-# LIST_OF_VCFS=$(ls ${OUTDIR}/*/variants/baldur/to_ref/*.baldur.norm.vcf.gz)
-# bcftools merge -m none ${LIST_OF_VCFS} -Oz -o ${OUTDIR}/merged.baldur.vcf.gz
+## baldur
+LIST_OF_VCFS=$(ls ${OUTDIR}/*/variants/baldur/*.baldur.norm.vep.vcf.gz)
+bcftools merge -m none ${LIST_OF_VCFS} -Oz -o ${OUTDIR}/merged.baldur.norm.vep.vcf.gz
 
-# ${SCRIPTDIR}/annotate.py --annotations ${MITOMAP} \
-# --input ${OUTDIR}/merged.baldur.vcf.gz --caller baldur --multisample
-
-
+${SCRIPTDIR}/annotate.py --annotations ${MITOMAP} \
+--input ${OUTDIR}/merged.baldur.norm.vep.vcf.gz --caller baldur --multisample
 
 
-LIST_OF_VCFS=$(ls /net/nwgc/vol1/nobackup/czaka/mutect2/smaht/illumina/output/*/*.mutect2.vcf.gz)
-bcftools merge -m none ${LIST_OF_VCFS} -Oz -o /net/nwgc/vol1/nobackup/czaka/himito/smaht/hapmap/ont/output/merged.himito.vcf.gz
+
+
+# LIST_OF_VCFS=$(ls /net/nwgc/vol1/nobackup/czaka/himito/smaht/hapmap/ont/output/*/*.vcf.gz)
+# bcftools merge -m none ${LIST_OF_VCFS} -Oz -o /net/nwgc/vol1/nobackup/czaka/himito/smaht/hapmap/ont/output/merged.himito.vcf.gz
 
