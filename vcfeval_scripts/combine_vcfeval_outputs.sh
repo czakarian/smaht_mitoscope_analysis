@@ -6,23 +6,23 @@ source /etc/profile.d/modules.sh
 module load modules modules-init modules-gs 
 module load bcftools/1.21 htslib/1.21
 
-INDIR="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/hapmap/hprc_truthset_eval/"
-TABLE="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/analysis/vcfeval_scripts/vcfeval_table.csv"
-TABLE_BY_SAMPLE="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/analysis/vcfeval_scripts/vcfeval_table_by_sample.csv"
+INDIR="/net/nwgc/vol1/home/czaka/analysis/mitoscope/smaht/hapmap/hprc_truthset_eval/"
+TABLE="/net/nwgc/vol1/home/czaka/analysis/mitoscope/smaht/analysis/vcfeval_scripts/vcfeval_table.csv"
+TABLE_BY_SAMPLE="/net/nwgc/vol1/home/czaka/analysis/mitoscope/smaht/analysis/vcfeval_scripts/vcfeval_table_by_sample.csv"
 
 ## tables for multisample 
-ALL_OUT="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/hapmap/hprc_truthset_eval/combined_tables/HPRC.vcfeval.multisample.all.tsv"
-SNV_OUT="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/hapmap/hprc_truthset_eval/combined_tables/HPRC.vcfeval.multisample.snvs.tsv"
-INDEL_OUT="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/hapmap/hprc_truthset_eval/combined_tables/HPRC.vcfeval.multisample.indels.tsv"
+ALL_OUT="${INDIR}/combined_tables/HPRC.vcfeval.multisample.all.tsv"
+SNV_OUT="${INDIR}/combined_tables/HPRC.vcfeval.multisample.snvs.tsv"
+INDEL_OUT="${INDIR}/combined_tables/HPRC.vcfeval.multisample.indels.tsv"
 
-HC_ALL_OUT="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/hapmap/hprc_truthset_eval/combined_tables/HPRC.vcfeval.multisample.all.highconf.tsv"
-HC_SNV_OUT="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/hapmap/hprc_truthset_eval/combined_tables/HPRC.vcfeval.multisample.snvs.highconf.tsv"
-HC_INDEL_OUT="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/hapmap/hprc_truthset_eval/combined_tables/HPRC.vcfeval.multisample.indels.highconf.tsv"
+HC_ALL_OUT="${INDIR}/combined_tables/HPRC.vcfeval.multisample.all.highconf.tsv"
+HC_SNV_OUT="${INDIR}/combined_tables/HPRC.vcfeval.multisample.snvs.highconf.tsv"
+HC_INDEL_OUT="${INDIR}/combined_tables/HPRC.vcfeval.multisample.indels.highconf.tsv"
 
 ## tables by sample
-ALL_OUT_BY_SAMPLE="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/hapmap/hprc_truthset_eval/combined_tables/HPRC.vcfeval.by_sample.all.tsv"
-SNV_OUT_BY_SAMPLE="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/hapmap/hprc_truthset_eval/combined_tables/HPRC.vcfeval.by_sample.snvs.tsv"
-INDEL_OUT_BY_SAMPLE="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/hapmap/hprc_truthset_eval/combined_tables/HPRC.vcfeval.by_sample.indels.tsv"
+ALL_OUT_BY_SAMPLE="${INDIR}/combined_tables/HPRC.vcfeval.by_sample.all.tsv"
+SNV_OUT_BY_SAMPLE="${INDIR}/combined_tables/HPRC.vcfeval.by_sample.snvs.tsv"
+INDEL_OUT_BY_SAMPLE="${INDIR}/combined_tables/HPRC.vcfeval.by_sample.indels.tsv"
 
 HEADER="tool\ttech\ttrue_positives_baseline\tfalse_positives\ttrue_positives_call\tfalse_negatives\tprecision\tsensitivity\tf_measure"
 HEADER_BY_SAMPLE="tool\ttech\tsample\ttrue_positives_baseline\tfalse_positives\ttrue_positives_call\tfalse_negatives\tprecision\tsensitivity\tf_measure"
