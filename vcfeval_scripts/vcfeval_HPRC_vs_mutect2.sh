@@ -14,9 +14,9 @@ HPRC_INPUT_VCF="/net/nwgc/vol1/home/czaka/analysis/mitoscope/smaht/hapmap/hprc_t
 HPRC_FORMATTED_VCF="/net/nwgc/vol1/home/czaka/analysis/mitoscope/smaht/hapmap/hprc_truthset_eval/hprc-v2.0-mc-grch38.wave.vcfeval.vcf.gz"
 
 INDIR="/net/nwgc/vol1/home/czaka/analysis/mutect2/smaht/illumina/hapmap/output"
-MULTISAMPLE_VCF="${INDIR}/merged.mutect2.norm.vcf.gz"
-MULTISAMPLE_FORMATTED_VCF="${INDIR}/merged.mutect2.norm.vcfeval.vcf.gz"
-MULTISAMPLE_FORMATTED_VCF_HIGHCONF="${INDIR}/merged.mutect2.norm.vcfeval.highconf.vcf.gz"
+MULTISAMPLE_VCF="${INDIR}/merged.mutect2.filtered.norm.vcf.gz"
+MULTISAMPLE_FORMATTED_VCF="${INDIR}/merged.mutect2.filtered.norm.vcfeval.vcf.gz"
+MULTISAMPLE_FORMATTED_VCF_HIGHCONF="${INDIR}/merged.mutect2.filtered.norm.vcfeval.highconf.vcf.gz"
 
 RTG_OUTDIR="/net/nwgc/vol1/home/czaka/analysis/mitoscope/smaht/hapmap/hprc_truthset_eval/${tool}/${tech}/"
 
@@ -63,8 +63,8 @@ rtg vcfeval \
 ## run eval individually per sample (not on merged vcf)
 for SAMPLE in ${SAMPLES};
 do
-    INPUT_VCF="${INDIR}/${SAMPLE}/${SAMPLE}.mutect2.vcf.gz"
-    FORMATTED_VCF="${INDIR}/${SAMPLE}/${SAMPLE}.mutect2.vcfeval.vcf.gz"
+    INPUT_VCF="${INDIR}/${SAMPLE}/${SAMPLE}.mutect2.filtered.norm.vcf.gz"
+    FORMATTED_VCF="${INDIR}/${SAMPLE}/${SAMPLE}.mutect2.filtered.norm.vcfeval.vcf.gz"
 
     ## format the input vcf for use with vcfeval
     bcftools norm --multiallelics -both ${INPUT_VCF} | \

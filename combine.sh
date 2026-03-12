@@ -4,7 +4,7 @@ source /etc/profile.d/modules.sh
 module load modules modules-init modules-gs 
 module load bcftools/1.21 htslib/1.21
 
-tech="ont"
+tech="pacbio"
 group="benchmark"
 
 OUTDIR="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/${group}/${tech}/output"
@@ -19,13 +19,11 @@ MITOMAP="/net/nwgc/vol1/home/czaka/tools/mitoscope/resources/annotations/Combine
 # --input ${OUTDIR}/merged.mutserve.vcf.gz --caller mutserve --multisample
 
 ## baldur
-LIST_OF_VCFS=$(ls ${OUTDIR}/*/variants/baldur/*.baldur.norm.vep.vcf.gz)
-bcftools merge -m none ${LIST_OF_VCFS} -Oz -o ${OUTDIR}/merged.baldur.norm.vep.vcf.gz
+LIST_OF_VCFS=$(ls ${OUTDIR}/*/variants/baldur/*.mt.baldur.annotated.vcf.gz)
+bcftools merge -m none ${LIST_OF_VCFS} -Oz -o ${OUTDIR}/merged.mt.baldur.annotated.vcf.gz
 
 ${SCRIPTDIR}/annotate.py --annotations ${MITOMAP} \
---input ${OUTDIR}/merged.baldur.norm.vep.vcf.gz --caller baldur --multisample
-
-
+--input ${OUTDIR}/merged.mt.baldur.annotated.vcf.gz --caller baldur --multisample
 
 
 # LIST_OF_VCFS=$(ls /net/nwgc/vol1/nobackup/czaka/himito/smaht/hapmap/ont/output/*/*.vcf.gz)
