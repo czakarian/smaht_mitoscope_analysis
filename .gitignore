@@ -1,0 +1,6 @@
+plots/
+tables/
+short_read_total_counts
+short_read_coverage
+read_lengths_full_bams
+pileup_bases

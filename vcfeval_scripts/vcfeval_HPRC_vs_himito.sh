@@ -33,36 +33,36 @@ RTG_OUTDIR_HIGHCONF="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/hapmap/hprc_t
 # sed 's/chrM/MT/g' | sed 's/HG002/SAMPLE/g' | bgzip > ${HPRC_FORMATTED_VCF}
 # bcftools index --tbi ${HPRC_FORMATTED_VCF}
 
-# ## generate merged multisample vcf
-# LIST_OF_VCFS=$(ls /net/nwgc/vol1/nobackup/czaka/${tool}/smaht/hapmap/${tech}/output/*/*.vcf.gz)
-# bcftools merge -m none ${LIST_OF_VCFS} -Oz -o ${MULTISAMPLE_VCF}
-# ## format the merged multisample vcf for use with vcfeval
-# bcftools norm --multiallelics -both ${MULTISAMPLE_VCF} | bcftools norm --atomize --atom-overlaps . | \
-# bcftools +fill-tags -- -t 'NUM_AC:1=AC' | \
-# bcftools +fill-tags -- -t 'AVG_HET:1=sum(HF)/INFO/NUM_AC' | \
-# bcftools view -s hapmap-${tech}-bcm  | \
-# bcftools annotate -x FORMAT | \
-# bcftools +setGT -- -t a -n c:'1' | \
-# sed 's/chrM/MT/g' | sed "s/hapmap-${tech}-bcm/SAMPLE/g" | bgzip > ${MULTISAMPLE_FORMATTED_VCF}
-# bcftools index --tbi ${MULTISAMPLE_FORMATTED_VCF}
+## generate merged multisample vcf
+LIST_OF_VCFS=$(ls /net/nwgc/vol1/nobackup/czaka/${tool}/smaht/hapmap/${tech}/output/*/*.vcf.gz)
+bcftools merge -m none ${LIST_OF_VCFS} -Oz -o ${MULTISAMPLE_VCF}
+## format the merged multisample vcf for use with vcfeval
+bcftools norm --multiallelics -both ${MULTISAMPLE_VCF} | bcftools norm --atomize --atom-overlaps . | \
+bcftools +fill-tags -- -t 'NUM_AC:1=AC' | \
+bcftools +fill-tags -- -t 'AVG_HET:1=sum(HF)/INFO/NUM_AC' | \
+bcftools view -s hapmap-${tech}-bcm  | \
+bcftools annotate -x FORMAT | \
+bcftools +setGT -- -t a -n c:'1' | \
+sed 's/chrM/MT/g' | sed "s/hapmap-${tech}-bcm/SAMPLE/g" | bgzip > ${MULTISAMPLE_FORMATTED_VCF}
+bcftools index --tbi ${MULTISAMPLE_FORMATTED_VCF}
 
-# ## high conf variants (in at least 2 sites)
-# bcftools view -i 'NUM_AC>=2' ${MULTISAMPLE_FORMATTED_VCF} -Oz -o ${MULTISAMPLE_FORMATTED_VCF_HIGHCONF}
-# bcftools index --tbi ${MULTISAMPLE_FORMATTED_VCF_HIGHCONF}
+## high conf variants (in at least 2 sites)
+bcftools view -i 'NUM_AC>=2' ${MULTISAMPLE_FORMATTED_VCF} -Oz -o ${MULTISAMPLE_FORMATTED_VCF_HIGHCONF}
+bcftools index --tbi ${MULTISAMPLE_FORMATTED_VCF_HIGHCONF}
 
-# ## run rtg vcfeval 
-# #rtg format -o ${REF_RTG} ${REF}
-# rtg vcfeval \
-#     -b ${HPRC_FORMATTED_VCF}  \
-#     -c ${MULTISAMPLE_FORMATTED_VCF} \
-#     -t ${REF_RTG} \
-#     -o ${RTG_OUTDIR}
+## run rtg vcfeval 
+#rtg format -o ${REF_RTG} ${REF}
+rtg vcfeval \
+    -b ${HPRC_FORMATTED_VCF}  \
+    -c ${MULTISAMPLE_FORMATTED_VCF} \
+    -t ${REF_RTG} \
+    -o ${RTG_OUTDIR}
 
-# rtg vcfeval \
-#     -b ${HPRC_FORMATTED_VCF}  \
-#     -c ${MULTISAMPLE_FORMATTED_VCF_HIGHCONF} \
-#     -t ${REF_RTG} \
-#     -o ${RTG_OUTDIR_HIGHCONF}
+rtg vcfeval \
+    -b ${HPRC_FORMATTED_VCF}  \
+    -c ${MULTISAMPLE_FORMATTED_VCF_HIGHCONF} \
+    -t ${REF_RTG} \
+    -o ${RTG_OUTDIR_HIGHCONF}
 
 ## run eval individually per sample (not on merged vcf)
 for SAMPLE in ${SAMPLES};
