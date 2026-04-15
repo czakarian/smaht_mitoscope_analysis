@@ -5,79 +5,45 @@ set -euo pipefail
 module load modules modules-init modules-gs
 module load bcftools/1.21 htslib/1.21 rtg-tools/3.12.1
 
-tech="ont"
+tech="pacbio"
 tool="himito"
-SAMPLES=$(cut -d',' -f 1 /net/nwgc/vol1/nobackup/czaka/himito/smaht/hapmap/${tech}/samples.csv | tail +2)
 
-REF="/net/nwgc/vol1/home/czaka/tools/mitoscope/nextflow/pipeline/resources/MT.fasta"
-REF_RTG="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/hapmap/hprc_truthset_eval/rtg_mt_ref"
+INDIR="/net/nwgc/vol1/home/czaka/analysis/${tool}/smaht/hapmap/${tech}"
+SAMPLES=$(cut -d',' -f 1 ${INDIR}/samples.csv | tail +2)
+MULTISAMPLE_VCF="${INDIR}/output/merged.himito.vcf.gz"
+MULTISAMPLE_FORMATTED_VCF="${INDIR}/output/merged.himito.vcfeval.vcf.gz"
 
-HPRC_INPUT_VCF="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/hapmap/hprc_truthset_eval/hprc-v2.0-mc-grch38.wave.vcf.gz"
-HPRC_FORMATTED_VCF="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/hapmap/hprc_truthset_eval/hprc-v2.0-mc-grch38.wave.vcfeval.vcf.gz"
+REF="/net/nwgc/vol1/home/czaka/tools/mitoscope/resources/MT.fasta"
+REF_RTG="/net/nwgc/vol1/home/czaka/analysis/mitoscope/smaht/hapmap/hprc_truthset_eval/rtg_mt_ref"
+HPRC_FORMATTED_VCF="/net/nwgc/vol1/home/czaka/analysis/mitoscope/smaht/hapmap/hprc_truthset_eval/hprc-v2.0-mc-grch38.wave.vcfeval.vcf.gz"
+RTG_OUTDIR="/net/nwgc/vol1/home/czaka/analysis/mitoscope/smaht/hapmap/hprc_truthset_eval/${tool}/${tech}/"
 
-MULTISAMPLE_VCF="/net/nwgc/vol1/nobackup/czaka/${tool}/smaht/hapmap/${tech}/output/merged.himito.vcf.gz"
-MULTISAMPLE_FORMATTED_VCF="/net/nwgc/vol1/nobackup/czaka/${tool}/smaht/hapmap/${tech}/output/merged.himito.vcfeval.vcf.gz"
-MULTISAMPLE_FORMATTED_VCF_HIGHCONF="/net/nwgc/vol1/nobackup/czaka/${tool}/smaht/hapmap/${tech}/output/merged.himito.vcfeval.highconf.vcf.gz"
 
-RTG_OUTDIR="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/hapmap/hprc_truthset_eval/${tool}/${tech}/vcfeval_result_all"
-RTG_OUTDIR_HIGHCONF="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/hapmap/hprc_truthset_eval/${tool}/${tech}/vcfeval_result_highconf"
-
-# # format the hprc truth vcf and select only mt variants in hapmap samples
-# bcftools view -r chrM ${HPRC_INPUT_VCF} -e 'POS=3106' | \
-# bcftools norm --multiallelics -both  | \
-# bcftools norm --atomize --atom-overlaps . | \
-# bcftools view -s HG002,HG005,HG00438,HG02257,HG02486,HG02622 | \
-# bcftools view -i 'INFO/AC>0' | \
-# bcftools view -s HG002 | bcftools annotate -x FORMAT | \
-# bcftools +setGT -- -t a -n c:'1' | \
-# sed 's/chrM/MT/g' | sed 's/HG002/SAMPLE/g' | bgzip > ${HPRC_FORMATTED_VCF}
-# bcftools index --tbi ${HPRC_FORMATTED_VCF}
-
-## generate merged multisample vcf
-LIST_OF_VCFS=$(ls /net/nwgc/vol1/nobackup/czaka/${tool}/smaht/hapmap/${tech}/output/*/*.vcf.gz)
-bcftools merge -m none ${LIST_OF_VCFS} -Oz -o ${MULTISAMPLE_VCF}
+## get first SAMPLE name to reduce to 1 column and replace name
+FIRST_SAMPLE=$(bcftools query -l ${MULTISAMPLE_VCF} | head -n 1)
 ## format the merged multisample vcf for use with vcfeval
 bcftools norm --multiallelics -both ${MULTISAMPLE_VCF} | bcftools norm --atomize --atom-overlaps . | \
 bcftools +fill-tags -- -t 'NUM_AC:1=AC' | \
 bcftools +fill-tags -- -t 'AVG_HET:1=sum(HF)/INFO/NUM_AC' | \
-bcftools view -s hapmap-${tech}-bcm  | \
-bcftools annotate -x FORMAT | \
+bcftools view -s ${FIRST_SAMPLE}  | \
+bcftools annotate -x FORMAT,INFO/AC,INFO/AN | \
 bcftools +setGT -- -t a -n c:'1' | \
-sed 's/chrM/MT/g' | sed "s/hapmap-${tech}-bcm/SAMPLE/g" | bgzip > ${MULTISAMPLE_FORMATTED_VCF}
+sed 's/chrM/MT/g' | sed "s/${FIRST_SAMPLE}/SAMPLE/g" | bgzip > ${MULTISAMPLE_FORMATTED_VCF}
 bcftools index --tbi ${MULTISAMPLE_FORMATTED_VCF}
 
-## high conf variants (in at least 2 sites)
-bcftools view -i 'NUM_AC>=2' ${MULTISAMPLE_FORMATTED_VCF} -Oz -o ${MULTISAMPLE_FORMATTED_VCF_HIGHCONF}
-bcftools index --tbi ${MULTISAMPLE_FORMATTED_VCF_HIGHCONF}
-
-## run rtg vcfeval 
-#rtg format -o ${REF_RTG} ${REF}
-rtg vcfeval \
-    -b ${HPRC_FORMATTED_VCF}  \
-    -c ${MULTISAMPLE_FORMATTED_VCF} \
-    -t ${REF_RTG} \
-    -o ${RTG_OUTDIR}
-
-rtg vcfeval \
-    -b ${HPRC_FORMATTED_VCF}  \
-    -c ${MULTISAMPLE_FORMATTED_VCF_HIGHCONF} \
-    -t ${REF_RTG} \
-    -o ${RTG_OUTDIR_HIGHCONF}
 
 ## run eval individually per sample (not on merged vcf)
 for SAMPLE in ${SAMPLES};
 do
     echo ${SAMPLE}
-    INPUT_VCF="/net/nwgc/vol1/nobackup/czaka/${tool}/smaht/hapmap/${tech}/output/${SAMPLE}/${SAMPLE}.vcf.gz"
-    FORMATTED_VCF="/net/nwgc/vol1/nobackup/czaka/${tool}/smaht/hapmap/${tech}/output/${SAMPLE}/${SAMPLE}.vcfeval.vcf.gz"
-    RTG_OUTDIR="/net/nwgc/vol1/nobackup/czaka/mitoscope/smaht/hapmap/hprc_truthset_eval/${tool}/${tech}/individual_samples/${SAMPLE}"
+    INPUT_VCF="${INDIR}/output/${SAMPLE}/${SAMPLE}.vcf.gz"
+    FORMATTED_VCF="${INDIR}/output/${SAMPLE}/${SAMPLE}.vcfeval.vcf.gz"
 
     ## format the input vcf for use with vcfeval
     bcftools norm --multiallelics -both ${INPUT_VCF} | bcftools norm --atomize --atom-overlaps . | \
     bcftools annotate -x FORMAT | \
     bcftools +setGT -- -t a -n c:'1' | \
     sed 's/chrM/MT/g' | bgzip > ${FORMATTED_VCF}
-
     bcftools index --tbi ${FORMATTED_VCF}
 
     ## run rtg vcfeval 
@@ -86,7 +52,7 @@ do
         -b ${HPRC_FORMATTED_VCF}  \
         -c ${FORMATTED_VCF} \
         -t ${REF_RTG} \
-        -o ${RTG_OUTDIR}
+        -o ${RTG_OUTDIR}/${SAMPLE}
 
 done
 
