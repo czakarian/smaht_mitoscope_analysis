@@ -1,0 +1,7 @@
+tool,tech,sample
+mitoscope,30x,pacbio,hapmap-pacbio-30x
+mitoscope,60x,pacbio,hapmap-pacbio-60x
+mitoscope,90x,pacbio,hapmap-pacbio-90x
+mitoscope,30x,ont,hapmap-ont-30x
+mitoscope,60x,ont,hapmap-ont-60x
+mitoscope,90x,ont,hapmap-ont-90x
