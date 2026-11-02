@@ -7,14 +7,14 @@ module load bcftools/1.21 htslib/1.21 rtg-tools/3.12.1
 
 tech="pacbio"
 tool="himito"
-group="_025"
+group=""
 
-INDIR="/net/nwgc/vol1/home/czaka/analysis/${tool}/smaht/hapmap_v1.1.0/${tech}"
+INDIR="/net/nwgc/vol1/home/czaka/analysis/${tool}/smaht/hapmap_v1.1.2/${tech}"
 SAMPLES=$(cut -d',' -f 1 ${INDIR}/samples.csv | tail +2)
 REF="/net/nwgc/vol1/home/czaka/tools/mitoscope/resources/MT.fasta"
 REF_RTG="/net/nwgc/vol1/home/czaka/analysis/mitoscope/smaht/hapmap/hprc_truthset_eval/rtg_mt_ref"
 HPRC_FORMATTED_VCF="/net/nwgc/vol1/home/czaka/analysis/mitoscope/smaht/hapmap/hprc_truthset_eval/hprc-v2.0-mc-grch38.wave.vcfeval.vcf.gz"
-RTG_OUTDIR="/net/nwgc/vol1/home/czaka/analysis/mitoscope/smaht/hapmap/hprc_truthset_eval/${tool}_1.1.0/${tech}${group}/"
+RTG_OUTDIR="/net/nwgc/vol1/home/czaka/analysis/mitoscope/smaht/hapmap/hprc_truthset_eval/${tool}_1.1.2/${tech}${group}/"
 
 mkdir -p ${RTG_OUTDIR}
 
